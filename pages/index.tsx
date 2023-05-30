@@ -26,6 +26,8 @@ export const Index = ({
   const [serverError, setServerError] = useState(false);
 
   useEffect(() => {
+    console.log(process.env.ENV_VARIABLE);
+
     const checkServerStatus = async () => {
       try {
         const response = await fetch('http://localhost:3333');
@@ -78,7 +80,7 @@ export async function getStaticProps(context: any) {
       );
       movies = await res.json();
     } catch(error) {
-      alert('server is down');
+      console.log('server is down');
     }
 
   }
