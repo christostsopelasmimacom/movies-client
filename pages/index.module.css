@@ -1,0 +1,17 @@
+.page {
+    background-color: #0F172A;
+    width: 100%;
+    text-align: center;
+    min-height: 100vh;
+}
+
+.search {
+    width: 400px;
+    height: 2em;
+    font-size: 2em;
+    margin: 1em 0 4em;
+    border-radius: 10px;
+    border: none;
+    text-align: center;
+    outline: none;
+}
