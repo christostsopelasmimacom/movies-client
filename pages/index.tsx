@@ -1,6 +1,7 @@
 import styles from './index.module.css';
 import React, { useCallback, useEffect, useState } from 'react';
 import {MoviesList} from "../components/MoviesList/MoviesList";
+import {ServerDown} from "../components/ServerDown/ServerDown";
 
 export interface Movie {
   title: string;
@@ -22,12 +23,30 @@ export const Index = ({
 }) => {
   const [search, setSearch] = useState('');
   const [movie, setMovie] = useState<Movie[]>(initialMovies);
+  const [serverError, setServerError] = useState(false);
 
   useEffect(() => {
-    console.log('hey hey');
-    fetch(`http://localhost:3333/search?q=${escape(search)}`)
-      .then((resp) => resp.json())
-      .then((data) => setMovie(data));
+    const checkServerStatus = async () => {
+      try {
+        const response = await fetch('http://localhost:3333');
+        if (response.ok) {
+          fetch(`http://localhost:3333/search?q=${search}`)
+            .then((resp) => resp.json())
+            .then((data) => setMovie(data));
+          setServerError(false);
+          return;
+        } else {
+          setServerError(true);
+          console.log('Server is not responding');
+        }
+      } catch (error) {
+        setServerError(true);
+        console.log('Error occurred while connecting to the server:', error);
+      }
+    };
+
+    checkServerStatus();
+
   }, [search]);
 
   const onSetSearch = useCallback(
@@ -45,7 +64,7 @@ export const Index = ({
         onChange={onSetSearch}
         placeholder="Search movie..."
       />
-      <MoviesList movies={movie} />
+      {serverError ? <ServerDown /> : <MoviesList movies={movie} />}
     </div>
   );
 };
@@ -53,10 +72,15 @@ export const Index = ({
 export async function getStaticProps(context: any) {
   let movies = [];
   if (context?.query?.q) {
-    const res = await fetch(
-      `http://localhost:3333/search?q=${escape(context.query.q)}`
-    );
-    movies = await res.json();
+    try {
+      const res = await fetch(
+          `http://localhost:3333/search?q=${context.query.q}`
+      );
+      movies = await res.json();
+    } catch(error) {
+      alert('server is down');
+    }
+
   }
 
   return {
