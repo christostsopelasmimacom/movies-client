@@ -30,9 +30,9 @@ export const Index = ({
 
     const checkServerStatus = async () => {
       try {
-        const response = await fetch('http://localhost:3333');
+        const response = await fetch('https://movies-server.azurewebsites.net');
         if (response.ok) {
-          fetch(`http://localhost:3333/search?q=${search}`)
+          fetch(`https://movies-server.azurewebsites.net/search?q=${search}`)
             .then((resp) => resp.json())
             .then((data) => setMovie(data));
           setServerError(false);
@@ -76,7 +76,7 @@ export async function getStaticProps(context: any) {
   if (context?.query?.q) {
     try {
       const res = await fetch(
-          `http://localhost:3333/search?q=${context.query.q}`
+          `https://movies-server.azurewebsites.net/search?q=${context.query.q}`
       );
       movies = await res.json();
     } catch(error) {
